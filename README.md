@@ -1,108 +1,71 @@
-# Getting Started app for Discord
+# Premier bot Discord
 
-This project contains a basic rock-paper-scissors-style Discord app written in JavaScript, built for the [getting started guide](https://discord.com/developers/docs/getting-started).
+Bot Discord en JavaScript basé sur [discord.js](https://discord.js.org/), connecté via la Gateway Discord (connexion WebSocket sortante : pas besoin d'URL publique, de port ouvert ni de ngrok).
 
-![Demo of app](https://github.com/discord/discord-example-app/raw/main/assets/getting-started-demo.gif?raw=true)
+## Fonctionnalités
 
-## Project structure
-Below is a basic overview of the project structure:
+| Commande | Description | Disponible |
+|---|---|---|
+| `/test` | Commande de test basique pour vérifier que le bot répond | Serveurs, DM, MP de groupe |
+| `/challenge <objet>` | Lance un défi pierre-feuille-ciseaux | Serveurs, MP de groupe |
+| `/focus <utilisateur> <salon>` | Cible un utilisateur dans un salon donné (réservé au rôle défini avec `/setup`) | Serveurs uniquement |
+| `/setup <rôle>` | Choisit le rôle autorisé à utiliser `/focus` | Serveurs uniquement |
 
-```
-├── examples    -> short, feature-specific sample apps
-│   ├── app.js  -> finished app.js code
-│   ├── button.js
-│   ├── command.js
-│   ├── modal.js
-│   ├── selectMenu.js
-├── .env.sample -> sample .env file
-├── app.js      -> main entrypoint for app
-├── commands.js -> slash command payloads + helpers
-├── game.js     -> logic specific to RPS
-├── utils.js    -> utility functions and enums
-├── package.json
-├── README.md
-└── .gitignore
-```
+## Prérequis
 
-## Running app locally
+- [Node.js](https://nodejs.org/) 24 ou plus récent
+- Une application Discord créée sur le [portail développeur](https://discord.com/developers/applications), avec un bot
+- (Optionnel) [Docker](https://www.docker.com/)
 
-Before you start, you'll need to install [NodeJS](https://nodejs.org/en/download/) and [create a Discord app](https://discord.com/developers/applications) with the proper permissions:
-- `applications.commands`
-- `bot` (with Send Messages enabled)
+## Configuration
 
+1. Copie le fichier d'exemple des variables d'environnement :
 
-Configuring the app is covered in detail in the [getting started guide](https://discord.com/developers/docs/getting-started).
+   ```bash
+   cp .env.sample .env
+   ```
 
-### Setup project
+2. Remplis `.env` avec les informations de ton application (onglets *General Information* et *Bot* du portail développeur) :
 
-First clone the project:
-```
-git clone https://github.com/discord/discord-example-app.git
-```
+   ```env
+   DISCORD_TOKEN=ton_token_de_bot
+   APP_ID=id_de_ton_application
+   ```
 
-Then navigate to its directory and install dependencies:
-```
-cd discord-example-app
+3. Dans le portail développeur, laisse le champ **Interactions Endpoint URL** vide : le bot reçoit les interactions par la Gateway.
+
+4. Invite le bot sur ton serveur via *OAuth2 → URL Generator*, avec les scopes `bot` et `applications.commands` et les permissions dont il a besoin.
+
+> Ne publie jamais ton fichier `.env` : il est ignoré par Git.
+
+## Lancer le bot
+
+### En local
+
+```bash
 npm install
-```
-### Get app credentials
-
-Fetch the credentials from your app's settings and add them to a `.env` file (see `.env.sample` for an example). You'll need your app ID (`APP_ID`), bot token (`DISCORD_TOKEN`), and public key (`PUBLIC_KEY`).
-
-Fetching credentials is covered in detail in the [getting started guide](https://discord.com/developers/docs/getting-started).
-
-> 🔑 Environment variables can be added to the `.env` file in Glitch or when developing locally, and in the Secrets tab in Replit (the lock icon on the left).
-
-### Install slash commands
-
-The commands for the example app are set up in `commands.js`. All of the commands in the `ALL_COMMANDS` array at the bottom of `commands.js` will be installed when you run the `register` command configured in `package.json`:
-
-```
-npm run register
+npm run register   # enregistre les slash commands auprès de Discord
+npm run start
 ```
 
-### Run the app
+### Avec Docker
 
-After your credentials are added, go ahead and run the app:
-
-```
-node app.js
-```
-
-> ⚙️ A package [like `nodemon`](https://github.com/remy/nodemon), which watches for local changes and restarts your app, may be helpful while locally developing.
-
-If you aren't following the [getting started guide](https://discord.com/developers/docs/getting-started), you can move the contents of `examples/app.js` (the finished `app.js` file) to the top-level `app.js`.
-
-### Set up interactivity
-
-The project needs a public endpoint where Discord can send requests. To develop and test locally, you can use something like [`ngrok`](https://ngrok.com/) to tunnel HTTP traffic.
-
-Install ngrok if you haven't already, then start listening on port `3000`:
-
-```
-ngrok http 3000
+```bash
+docker build -t premier-bot-discord .
+docker run -d --name bot --env-file .env --restart unless-stopped premier-bot-discord
 ```
 
-You should see your connection open:
+Le conteneur n'expose aucun port : le bot se connecte lui-même à Discord.
 
-```
-Tunnel Status                 online
-Version                       2.0/2.0
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    https://1234-someurl.ngrok.io -> localhost:3000
+## Structure du projet
 
-Connections                  ttl     opn     rt1     rt5     p50     p90
-                              0       0       0.00    0.00    0.00    0.00
-```
+| Fichier | Rôle |
+|---|---|
+| `app.js` | Point d'entrée : connexion à la Gateway et gestion des interactions |
+| `commands.js` | Définition et enregistrement des slash commands |
+| `utils.js` | Fonctions utilitaires |
+| `Dockerfile` | Image Docker du bot |
 
-Copy the forwarding address that starts with `https`, in this case `https://1234-someurl.ngrok.io`, then go to your [app's settings](https://discord.com/developers/applications).
+## Licence
 
-On the **General Information** tab, there will be an **Interactions Endpoint URL**. Paste your ngrok address there, and append `/interactions` to it (`https://1234-someurl.ngrok.io/interactions` in the example).
-
-Click **Save Changes**, and your app should be ready to run 🚀
-
-## Other resources
-- Read **[the documentation](https://discord.com/developers/docs/intro)** for in-depth information about API features.
-- Browse the `examples/` folder in this project for smaller, feature-specific code examples
-- Join the **[Discord Developers server](https://discord.gg/discord-developers)** to ask questions about the API, attend events hosted by the Discord API team, and interact with other devs.
-- Check out **[community resources](https://discord.com/developers/docs/topics/community-resources#community-resources)** for language-specific tools maintained by community members.
+Ce projet est dérivé de [discord/discord-example-app](https://github.com/discord/discord-example-app), distribué sous licence MIT. Voir [LICENSE](LICENSE).
