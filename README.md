@@ -9,6 +9,7 @@ Bot Discord en JavaScript basé sur [discord.js](https://discord.js.org/), conne
 | `/test` | Commande de test basique pour vérifier que le bot répond | Serveurs, DM, MP de groupe |
 | `/challenge <objet>` | Lance un défi pierre-feuille-ciseaux | Serveurs, MP de groupe |
 | `/focus <utilisateur> <salon>` | Cible un utilisateur dans un salon donné (réservé au rôle défini avec `/setup`) | Serveurs uniquement |
+| `/ibai <utilisateur> <salon> [longueur]` | Répond avec le gif défini dans `IBAI_GIF` (`app.js`) dès que l'utilisateur envoie un message d'au moins `longueur` caractères (50 par défaut) dans le salon (réservé au rôle défini avec `/setup`) | Serveurs uniquement |
 | `/setup <rôle>` | Choisit le rôle autorisé à utiliser `/focus` | Serveurs uniquement |
 
 ## Prérequis
@@ -32,9 +33,11 @@ Bot Discord en JavaScript basé sur [discord.js](https://discord.js.org/), conne
    APP_ID=id_de_ton_application
    ```
 
-3. Dans le portail développeur, laisse le champ **Interactions Endpoint URL** vide : le bot reçoit les interactions par la Gateway.
+3. Dans le portail développeur, onglet *Bot*, active **Message Content Intent** (nécessaire pour `/ibai`, qui lit la longueur des messages).
 
-4. Invite le bot sur ton serveur via *OAuth2 → URL Generator*, avec les scopes `bot` et `applications.commands` et les permissions dont il a besoin.
+4. Dans le portail développeur, laisse le champ **Interactions Endpoint URL** vide : le bot reçoit les interactions par la Gateway.
+
+5. Invite le bot sur ton serveur via *OAuth2 → URL Generator*, avec les scopes `bot` et `applications.commands` et les permissions dont il a besoin.
 
 > Ne publie jamais ton fichier `.env` : il est ignoré par Git.
 
