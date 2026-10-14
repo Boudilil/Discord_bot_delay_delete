@@ -1,11 +1,7 @@
 import 'dotenv/config';
 
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
-import { getRandomEmoji, DiscordRequest } from './utils.js';
-import { getShuffledOptions, getResult } from './game.js';
 
-// To keep track of our active games
-const activeGames = {};
 let roleId = null;
 let user_focused = null;
 let channel_focused = null;
@@ -35,14 +31,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if(!interaction.isChatInputCommand()) return;
   
   const name = interaction.commandName;
-
-  // "test" command
-    if (name === 'test') {
-      // Send a message into the channel where command was triggered from
-      return interaction.reply({
-        content: `hello world ${getRandomEmoji()}`,
-    });
-    }
 
     if (name === 'setup') {
       const authorId = interaction.user.id;
